@@ -7,15 +7,44 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import {IPhoto} from './types/shared';
-import {Avatar, Button, ButtonGroup, CardHeader, IconButton, Pagination} from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, {SelectChangeEvent} from '@mui/material/Select'
+import {
+    Autocomplete, autocompleteClasses,
+    Avatar,
+    Button,
+    ButtonGroup,
+    CardHeader,
+    IconButton,
+    Pagination,
+    Popper, styled,
+    TextField
+} from '@mui/material';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import {red} from '@mui/material/colors';
+import ImageModal from './components/ImageModal';
+import AlbumSelect from './components/AlbumSelect';
 
 const PER_PAGE = 12
+
+const StyledPopper = styled(Popper)({
+    [`& .${autocompleteClasses.listbox}`]: {
+        boxSizing: 'border-box',
+        '& ul': {
+            padding: 0,
+            margin: 0,
+        },
+    },
+});
 
 const App = () => {
     const [photos, setPhotos] = useState<IPhoto[]>([])
     const [page, setPage] = useState<number>(1)
+    const [selectedPhoto, setSelectedPhoto] = useState<IPhoto | null>(null)
+    const [albumId, setAlbumId] = useState<number | null>(null);
+
 
     useEffect(() => {
         fetch('https://jsonplaceholder.typicode.com/photos')
@@ -24,23 +53,52 @@ const App = () => {
     }, [])
 
     const queriedPhotos = useMemo(() => {
-        return [...photos].slice((page - 1) * 12, page * PER_PAGE)
+        let result: IPhoto[] = []
+
+        for (let i = 0; i < photos.length; i++) {
+            if (!albumId) result.push(photos[i])
+            if (photos[i].albumId === albumId) result.push(photos[i])
+            if (result.length >= 10) return result
+        }
+
+        return result
     }, [photos, page])
+
+    const allAlbumIds = useMemo(() => {
+        let result = new Set()
+
+        photos.forEach(({id}) => result.add(id))
+
+        return Array.from(result) as number[]
+    }, [photos])
 
     const handleDelete = (photoId: number) => {
         if (queriedPhotos.length === 1) {
-            setPage(Math.min(1, page - 1))
+            setPage(Math.max(1, page - 1))
         }
         setPhotos(prev => {
             return prev.filter(({id}) => id !== photoId)
         })
     }
 
+    const handleAlbumIdChange = (
+        _: any,
+        value: number | null
+    ) => {
+        setAlbumId(value)
+    };
+
     return (
         <Container>
-            <Grid container spacing={1}>
+            <ImageModal image={selectedPhoto} onClose={() => setSelectedPhoto(null)}/>
+            <AlbumSelect
+                // @ts-ignore
+                onChange={handleAlbumIdChange}
+                options={allAlbumIds}
+            />
+            <Grid container spacing={2}>
                 {queriedPhotos.map(photo => (
-                    <Grid key={crypto.randomUUID()} item xs={4} md={3} lg={2}>
+                    <Grid key={crypto.randomUUID()} item xs={12} sm={6} md={3} lg={2}>
                         <Card sx={{maxWidth: 345}}>
                             <CardActionArea>
                                 <CardMedia
@@ -56,17 +114,17 @@ const App = () => {
                                 </CardContent>
                             </CardActionArea>
                             <ButtonGroup style={{width: '100%'}} variant={'contained'} fullWidth>
-                                <Button>view</Button>
+                                <Button onClick={() => setSelectedPhoto(photo)}>view</Button>
                                 <Button onClick={() => handleDelete(photo.id)}>delete</Button>
                             </ButtonGroup>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
-
             <Pagination
+                page={page}
                 onChange={(_, value) => setPage(value)}
-                count={Math.floor(photos.length / PER_PAGE)}
+                count={Math.ceil(photos.length / PER_PAGE)}
                 variant={'outlined'}
                 shape={'rounded'}/>
         </Container>
