@@ -4,11 +4,11 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import {IPhoto} from '../types/shared';
+import {Photo} from '../types/shared';
 import {styled} from '@mui/material';
 
-type ImageModalPropsType = {
-    image: IPhoto | null
+type Props = {
+    image: Photo | null
     onClose: () => void
 }
 
@@ -18,15 +18,15 @@ const Image = styled('img')({
     objectFit: 'cover'
 })
 
-const ImageModal = (props: ImageModalPropsType) => {
+const PhotoModal = ({image,onClose}: Props) => {
     const handleClose = () => {
-        props.onClose()
+        onClose()
     };
 
     return (
         <Dialog
             fullScreen
-            open={!!props.image}
+            open={!!image}
             onClose={handleClose}
         >
             <AppBar sx={{position: 'relative'}}>
@@ -39,11 +39,11 @@ const ImageModal = (props: ImageModalPropsType) => {
                     </IconButton>
                 </Toolbar>
             </AppBar>
-            <Image src={props.image?.url} alt={'props.image?.title'} loading={'lazy'}/>
+            <Image src={image?.url} alt={'props.image?.title'} loading={'lazy'}/>
         </Dialog>
     );
 }
 
-export default ImageModal
+export default PhotoModal
 
 
