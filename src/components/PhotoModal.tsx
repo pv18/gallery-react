@@ -8,7 +8,7 @@ import {Photo} from '../types/shared';
 import {styled} from '@mui/material';
 
 type Props = {
-    image: Photo | null
+    photo: Photo | null
     onClose: () => void
 }
 
@@ -18,7 +18,7 @@ const Image = styled('img')({
     objectFit: 'cover'
 })
 
-const PhotoModal = ({image,onClose}: Props) => {
+const PhotoModal = ({photo,onClose}: Props) => {
     const handleClose = () => {
         onClose()
     };
@@ -26,7 +26,7 @@ const PhotoModal = ({image,onClose}: Props) => {
     return (
         <Dialog
             fullScreen
-            open={!!image}
+            open={!!photo}
             onClose={handleClose}
         >
             <AppBar sx={{position: 'relative'}}>
@@ -39,7 +39,7 @@ const PhotoModal = ({image,onClose}: Props) => {
                     </IconButton>
                 </Toolbar>
             </AppBar>
-            <Image src={image?.url} alt={'props.image?.title'} loading={'lazy'}/>
+            <Image src={photo?.url} alt={'props.image?.title'} loading={'lazy'}/>
         </Dialog>
     );
 }
