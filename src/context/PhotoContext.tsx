@@ -36,11 +36,8 @@ const PhotoProvider = (props: any) => {
     }, [albumId, photos])
 
     const queriedPhotos = useMemo(() => {
-        return photos
-            .filter(({albumId: id}) => albumId ? albumId === id : true)
-            .slice((page - 1) * PER_PAGE, PER_PAGE * page)
-
-    }, [photos, page, albumId])
+        return filteredByAlbum.slice((page - 1) * PER_PAGE, PER_PAGE * page)
+    }, [filteredByAlbum, page])
 
     const albumIds = useMemo(() => {
         let result = new Set()
