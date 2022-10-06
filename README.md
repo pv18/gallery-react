@@ -1,5 +1,3 @@
-![!Screen](https://github.com/pv18/gallery-react/blob/master/src/assets/screen.jpg)
-
 # Фотогалерея
 
 API - {JSON} Placeholder
