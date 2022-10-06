@@ -1,4 +1,4 @@
-![Header](https://github.com/gallery-react/src/assets/scrin.jpg)
+![!Screen](https://github.com/pv18/gallery-react/src/assets/screen.jpg)
 
 # Фотогалерея
 
